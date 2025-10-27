@@ -32,7 +32,7 @@ class Game
     puts "We have #{@p2.name} playing with #{@p2.peg}"
     current_score
 
-    10.times do |i|
+    3.times do |i|
       @round = i + 1
       delimiter
       run_round
@@ -54,15 +54,15 @@ class Game
     if @start_new_game
       puts "A new game is started."
     else
+      delimiter
       puts 'The game is over.'
-      current_score
       declare_winner
     end
   end
 
   def run_round
     puts "Round #{@round}"
-    @board.show_board
+    create_board
 
     (@rows ** 2).times do |i|
       player = assign_player(i)
@@ -71,7 +71,6 @@ class Game
       puts "Enter #{EXIT_WORDS[:stop_app]} to stop a game. \nEnter #{EXIT_WORDS[:next_round]} to start a new round. \nEnter #{EXIT_WORDS[:new_game]} to start a new game."
 
       bid = gets.chomp
-      puts "#{EXIT_WORDS[:stop_app]}"
 
       break if exit_reason_entered?(bid)
 
@@ -90,6 +89,7 @@ class Game
         round_winner(player)
         break
       end
+      current_score
     end
 
   end
@@ -97,12 +97,13 @@ class Game
   def round_winner(winner)
     puts "We have a round winner. #{winner.name} gets a score."
     add_score(winner)
-    final_scores
+    current_score
   end
 
   # board
   def set_board
-    create_board(get_board_size)
+    @rows = get_board_size
+    create_board
   end
 
   def get_board_size
@@ -117,9 +118,8 @@ class Game
     board_row
   end
 
-  def create_board(row)
-    @board = Board.new(row)
-    @rows = row
+  def create_board
+    @board = Board.new(@rows)
   end
 
   # player

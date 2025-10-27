@@ -26,6 +26,7 @@ class Board
 
   def show_board
     delimiter
+    puts show_board_numbers
     @board.each_with_index do |outer, i|
       line = "#{@alpha_array[i]} "
 
