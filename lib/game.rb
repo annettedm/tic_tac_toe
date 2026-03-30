@@ -1,10 +1,12 @@
 require_relative './board'
 require_relative './player'
 require_relative './helper'
+require_relative 'modules/printable'
 require 'debug'
 
 class Game
   include Helper
+  include Printable
 
   EXIT_WORDS = {
     stop_app: 's',
@@ -156,34 +158,11 @@ class Game
     end
   end
 
-  # show texts
-
-
-
-  def initial_instructions
-    delimiter
-    puts "Hi. We play Tic tac toe game."
-  end
-
-
   # show scores and winner
-
   def declare_winner
-    if @p1.score > 0 && @p2.score > 0
-      puts "#{@p1.name} is the winner with the score of #{@p1.score}. \n#{@p2.name}'s score is #{@p2.score}."
-        if @p1.score > @p2.score
-        elsif @p1.score < @p2.score
-          puts "#{@p2.name} is the winner with the score of #{@p2.score}. \n#{@p1.name}'s score is #{@p1.score}."
-        else
-          puts "Its a tie. Both players have a score of #{@p1.score}."
-        end
-      end
-  end
-
-  def current_score
-    puts "Current score is "
-    puts "#{@p1.name}: #{@p1.score}"
-    puts "#{@p2.name}: #{@p2.score}"
+    if score_positive?
+      show_score
+    end
   end
 
   def final_scores
@@ -191,5 +170,23 @@ class Game
     declare_winner
   end
 
+  private
 
+  def score_positive?
+    @p1.score.positive? && @p2.score.positive?
+  end
+
+  def p1_score_bigger?
+    @p1.score > @p2.score
+  end
+
+  def p2_score_bigger?
+    @p2.score > @p1.score
+  end
+
+  def show_score
+    print_score(@p1, @p2) if p1_score_bigger?
+    print_score(@p2, @p1) if p2_score_bigger?
+    print_score unless p1_score_bigger? || p2_score_bigger?
+  end
 end

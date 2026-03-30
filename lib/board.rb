@@ -6,7 +6,7 @@ class Board
   attr_reader :rows
 
   def initialize(rows)
-    @board = Array.new(rows) {Array.new(rows)}
+    @board = Array.new(rows) { Array.new(rows) }
     @rows = rows
     @alpha_array = ('A'..'Z').to_a.slice(0, rows)
     show_board
