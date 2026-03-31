@@ -36,7 +36,26 @@ module Printable
     if winner
       puts "#{winner.name} is the winner with the score of #{winner.score}. \n#{loser.name}'s score is #{loser.score}."
     else
-       puts "Its a tie. Both players have a score of #{@p1.score}."
+      puts "Its a tie. Both players have a score of #{@p1.score}."
     end
   end
+
+  def print_start_run_game_players
+    puts "We have #{@p1.name} playing with #{@p1.peg}"
+    puts "We have #{@p2.name} playing with #{@p2.peg}"
+  end
+
+
+  # ----------- round ---------
+
+  def declare_round_start
+    puts "Round #{@round}"
+  end
+
+  def print_round_loop_instructions(player)
+    puts "#{player.name}, make a choice, enter a letter and a number, for example, A2."
+    puts "Enter #{EXIT_WORDS[:stop_app]} to stop a game. \nEnter #{EXIT_WORDS[:next_round]} to start a new round. \nEnter #{EXIT_WORDS[:new_game]} to start a new game."
+  end
+  # ----------- end of round ---------
+
 end

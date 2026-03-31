@@ -21,9 +21,10 @@ class Game
     run_game
   end
 
+  # ----------- run game ---------
+
   def run_game
-    puts "We have #{@p1.name} playing with #{@p1.peg}"
-    puts "We have #{@p2.name} playing with #{@p2.peg}"
+    print_start_run_game_players
     current_score
 
     3.times do |i|
@@ -54,15 +55,24 @@ class Game
     end
   end
 
-  def run_round
-    puts "Round #{@round}"
-    create_board
+  # ----------- end of run game ---------
 
-    (@rows ** 2).times do |i|
+  # ----------- round ---------
+  def run_round
+
+    declare_round_start
+    @board.show_board
+  end
+
+  def assign_player(i)
+    i.even? ? @p1 : @p2
+  end
+
+  def run_round_loop
+    (@board.rows ** 2).times do |i|
       player = assign_player(i)
 
-      puts "#{player.name}, make a choice, enter a letter and a number, for example, A2."
-      puts "Enter #{EXIT_WORDS[:stop_app]} to stop a game. \nEnter #{EXIT_WORDS[:next_round]} to start a new round. \nEnter #{EXIT_WORDS[:new_game]} to start a new game."
+      print_round_loop_instructions(player)
 
       bid = gets.chomp
 
@@ -85,35 +95,57 @@ class Game
       end
       current_score
     end
-
   end
+
+  # ----------- end of round ---------
 
   def round_winner(winner)
     puts "We have a round winner. #{winner.name} gets a score."
     add_score(winner)
     current_score
   end
+  #
 
+  # ----------- set board ---------
   def set_board
-    get_board_size
-    create_board
+    rows = board_size
+    create_board(rows)
+    @board.show_board
   end
 
-  def get_board_size
+  def board_size
     print_board_size_instructions
+    rows = nil
 
     loop do
-      @rows = gets.chomp
-      break if entered_row_valid?
+      rows = gets.chomp
+      break if entered_row_valid?(rows)
+
       print_board_row_error
     end
+
+    rows
   end
 
-  def create_board
-    @board = Board.new(@rows.to_i)
+  def create_board(rows)
+    @board = Board.new(rows.to_i)
   end
 
-  # player
+  def valid_integer? str
+    Integer(str)
+    true
+  rescue ArgumentError, TypeError
+    false
+  end
+
+  def entered_row_valid?(rows)
+    pattern = Regexp.new(/^[#{Board::ROW_MIN}-#{Board::ROW_MAX}]$/)
+    valid_integer?(rows) && rows.match(pattern)
+  end
+
+  # ----------- end of set board ---------
+
+  # ----------- set players ---------
 
   def set_players
     puts "Now we set users."
@@ -125,9 +157,6 @@ class Game
     @p2 = @players[1]
   end
 
-  def assign_player(i)
-    i.even? ? @p1 : @p2
-  end
 
   def get_name(i)
     puts "What's player #{i + 1} name?"
@@ -135,11 +164,13 @@ class Game
     name =~ /[a-zA-Z]/ ? name : "Stranger"
   end
 
+# ----------- end of set players ---------
+
+
   def add_score(winner)
     winner.score += 1
   end
 
-  # exit reasons
   def exit_reason_entered?(bid)
     if EXIT_WORDS.values.include?(bid)
       @exit_reason = bid
@@ -147,7 +178,6 @@ class Game
     end
   end
 
-  # show scores and winner
   def declare_winner
     if score_positive?
       show_score
@@ -181,15 +211,4 @@ class Game
     print_score if p_scores_equal?
   end
 
-  def valid_integer? str
-    Integer(str)
-    true
-  rescue ArgumentError, TypeError
-    false
-  end
-
-  def entered_row_valid?
-    pattern = Regexp.new(/^[#{Board::ROW_MIN}-#{Board::ROW_MAX}]$/)
-    valid_integer?(@rows) && @rows.match(pattern)
-  end
 end

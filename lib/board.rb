@@ -12,7 +12,6 @@ class Board
     @board = Array.new(rows) { Array.new(rows) }
     @rows = rows
     @alpha_array = ('A'..'Z').to_a.slice(0, rows)
-    show_board
   end
 
   def assign_value(value, horizontal, vertical = 0)
