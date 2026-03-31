@@ -1,7 +1,10 @@
-require_relative './helper'
+require_relative './modules/printable'
 
 class Board
-  include Helper
+  include Printable
+
+  ROW_MIN = 3
+  ROW_MAX = 9
 
   attr_reader :rows
 

@@ -1,22 +1,16 @@
 require_relative './board'
 require_relative './player'
-require_relative './helper'
 require_relative 'modules/printable'
 require 'debug'
 
 class Game
-  include Helper
   include Printable
 
-  EXIT_WORDS = {
-    stop_app: 's',
-    next_round: 'r',
-    new_game: 'g' }
-    attr_reader :start_new_game
+  attr_reader :start_new_game
 
   def initialize
     @round = 1
-    @exit_reason = " "
+    @exit_reason = ""
     @start_new_game = false
   end
 
@@ -26,8 +20,6 @@ class Game
     set_players
     run_game
   end
-
-  private
 
   def run_game
     puts "We have #{@p1.name} playing with #{@p1.peg}"
@@ -102,26 +94,23 @@ class Game
     current_score
   end
 
-  # board
   def set_board
-    @rows = get_board_size
+    get_board_size
     create_board
   end
 
   def get_board_size
-    puts "How many cells would you like to have in a row? Please, enter an integer from 3 to 9."
-    board_row = gets.chomp.to_i
+    print_board_size_instructions
 
-    until board_row.between?(3, 9)
-      puts "The value is not valid. Please, enter an integer from 3 to 9."
-      board_row = gets.chomp.to_i
+    loop do
+      @rows = gets.chomp
+      break if entered_row_valid?
+      print_board_row_error
     end
-
-    board_row
   end
 
   def create_board
-    @board = Board.new(@rows)
+    @board = Board.new(@rows.to_i)
   end
 
   # player
@@ -170,8 +159,6 @@ class Game
     declare_winner
   end
 
-  private
-
   def score_positive?
     @p1.score.positive? && @p2.score.positive?
   end
@@ -184,9 +171,25 @@ class Game
     @p2.score > @p1.score
   end
 
+  def p_scores_equal?
+    @p1.score == @p2.score
+  end
+
   def show_score
     print_score(@p1, @p2) if p1_score_bigger?
     print_score(@p2, @p1) if p2_score_bigger?
-    print_score unless p1_score_bigger? || p2_score_bigger?
+    print_score if p_scores_equal?
+  end
+
+  def valid_integer? str
+    Integer(str)
+    true
+  rescue ArgumentError, TypeError
+    false
+  end
+
+  def entered_row_valid?
+    pattern = Regexp.new(/^[#{Board::ROW_MIN}-#{Board::ROW_MAX}]$/)
+    valid_integer?(@rows) && @rows.match(pattern)
   end
 end
