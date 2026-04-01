@@ -54,14 +54,14 @@ module Printable
 
   def round_turns_instructions(player)
     puts "#{player.name}, make a choice, enter a letter and a number, for example, A2."
-    puts "Enter #{EXIT_WORDS[:stop_app]} to stop a game. \nEnter #{EXIT_WORDS[:next_round]} to start a new round. \nEnter #{EXIT_WORDS[:new_game]} to start a new game."
+    puts "Enter #{ EXIT_WORDS[:stop_app] } to stop a game. \nEnter #{ EXIT_WORDS[:next_round] } to start a new round. \nEnter #{ EXIT_WORDS[:new_game] } to start a new game."
   end
 
   def invalid_input
     puts "Your bid is invalid or the cell is already occupied. Please enter 1 letter and 1 number joined."
   end
 
-  def print_round_winner_announcement(winner)
+  def round_winner_announcement(winner)
     puts "We have a round winner. #{winner.name} gets a score."
   end
   # ----------- end of round ---------

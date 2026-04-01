@@ -104,7 +104,7 @@ class Board
       counter += 1 if @board[i][i] == peg
     end
 
-    counter == @rows
+    counter_equals_rows?
   end
 
   def board_right_cross?(peg)
@@ -115,7 +115,7 @@ class Board
       counter += 1 if @board[i][back_counter] == peg
       back_counter -= 1
     end
-    counter == @rows
+    counter_equals_rows?
   end
 
   def board_horizontal?(peg)
@@ -124,9 +124,9 @@ class Board
       @rows.times do |j|
         counter += 1 if @board[i][j] == peg
       end
-      return true if counter == @rows
+      return true if counter_equals_rows?
     end
-    return false
+    false
   end
 
   def board_vertical?(peg)
@@ -135,8 +135,12 @@ class Board
       @rows.times do |j|
         counter += 1 if @board[j][i] == peg
       end
-      return true if counter == @rows
+      return true if counter_equals_rows?
     end
-    return false
+    false
+  end
+
+  def counter_equals_rows?(counter)
+    counter == @rows
   end
 end
