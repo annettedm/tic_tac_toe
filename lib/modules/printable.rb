@@ -24,15 +24,15 @@ module Printable
     puts "Hi. We play Tic tac toe game."
   end
 
-  def print_board_row_error
+  def board_row_error
     puts "The value is not valid. Please, enter an integer from #{Board::ROW_MIN} to #{Board::ROW_MAX}."
   end
 
-  def print_board_size_instructions
+  def board_size_instructions
     puts "How many cells would you like to have in a row? Please, enter an integer from #{Board::ROW_MIN} to #{Board::ROW_MAX}."
   end
 
-  def print_score winner, loser
+  def score winner, loser
     if winner
       puts "#{winner.name} is the winner with the score of #{winner.score}. \n#{loser.name}'s score is #{loser.score}."
     else
@@ -40,7 +40,7 @@ module Printable
     end
   end
 
-  def print_start_run_game_players
+  def run_game_start_players
     puts "We have #{@p1.name} playing with #{@p1.peg}"
     puts "We have #{@p2.name} playing with #{@p2.peg}"
   end
@@ -48,13 +48,21 @@ module Printable
 
   # ----------- round ---------
 
-  def declare_round_start
+  def round_number
     puts "Round #{@round}"
   end
 
-  def print_round_loop_instructions(player)
+  def round_turns_instructions(player)
     puts "#{player.name}, make a choice, enter a letter and a number, for example, A2."
     puts "Enter #{EXIT_WORDS[:stop_app]} to stop a game. \nEnter #{EXIT_WORDS[:next_round]} to start a new round. \nEnter #{EXIT_WORDS[:new_game]} to start a new game."
+  end
+
+  def invalid_input
+    puts "Your bid is invalid or the cell is already occupied. Please enter 1 letter and 1 number joined."
+  end
+
+  def print_round_winner_announcement(winner)
+    puts "We have a round winner. #{winner.name} gets a score."
   end
   # ----------- end of round ---------
 

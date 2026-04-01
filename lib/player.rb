@@ -7,4 +7,8 @@ class Player
     @peg = peg
     @score = 0
   end
+
+  def add_score
+    @score += 1
+  end
 end

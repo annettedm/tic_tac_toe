@@ -1,16 +1,17 @@
 require_relative './board'
 require_relative './player'
 require_relative 'modules/printable'
+require_relative 'modules/validable'
 require 'debug'
 
 class Game
   include Printable
+  include Validable
 
   attr_reader :start_new_game
 
   def initialize
     @round = 1
-    @exit_reason = ""
     @start_new_game = false
   end
 
@@ -24,23 +25,23 @@ class Game
   # ----------- run game ---------
 
   def run_game
-    print_start_run_game_players
+    run_game_start_players
     current_score
 
     3.times do |i|
       @round = i + 1
       delimiter
       run_round
-      if EXIT_WORDS.values.include?(@exit_reason)
-        if @exit_reason == EXIT_WORDS[:stop_app]
+      if EXIT_WORDS.values.include?(@input)
+        if @input == EXIT_WORDS[:stop_app]
           puts 'The game is stopped.'
           final_scores
           exit
-        elsif @exit_reason == EXIT_WORDS[:new_game]
+        elsif @input == EXIT_WORDS[:new_game]
           @start_new_game = true
           final_scores
           break
-        elsif @exit_reason == EXIT_WORDS[:next_round]
+        elsif @input == EXIT_WORDS[:next_round]
           next
         end
       end
@@ -59,52 +60,69 @@ class Game
 
   # ----------- round ---------
   def run_round
-
-    declare_round_start
+    round_number
     @board.show_board
+
+    run_round_turns
   end
 
   def assign_player(i)
     i.even? ? @p1 : @p2
   end
 
-  def run_round_loop
+  def run_round_turns
     (@board.rows ** 2).times do |i|
       player = assign_player(i)
+      get_input(player)
 
-      print_round_loop_instructions(player)
+      break if exit?
 
-      bid = gets.chomp
+      @board.assign_value(player, @bid)
+      @board.show_board
 
-      break if exit_reason_entered?(bid)
+      break if check_for_winner(player)
 
-      bid_result = @board.valid_bid?(bid)
-
-      while !bid_result
-        puts "Your bid is invalid or the cell is already occupied. Please enter 1 letter and 1 number joined."
-        bid = gets.chomp
-
-        bid_result = @board.valid_bid?(bid)
-      end
-
-      @board.assign_value(player.peg, bid)
-
-      if @board.round_winner?(player.peg)
-        round_winner(player)
-        break
-      end
       current_score
     end
   end
 
+  def exit?
+    true if EXIT_WORDS.values.include?(@input)
+  end
+
+  def get_input(player)
+    round_turns_instructions(player)
+
+    valid_input
+  end
+
+  def valid_input
+    loop do
+      @input = gets.chomp
+      break if exit?
+
+      break if @board.valid_bid?(@input)
+
+      invalid_input
+    end
+  end
+
+
   # ----------- end of round ---------
 
-  def round_winner(winner)
-    puts "We have a round winner. #{winner.name} gets a score."
-    add_score(winner)
-    current_score
+  # ----------- winner ---------
+
+  def check_for_round_winner(player)
+    if @board.round_win?(player)
+      print_round_winner_announcement(player)
+      player.add_score
+      current_score
+      return true
+    end
   end
-  #
+
+
+  # ----------- end of winner ---------
 
   # ----------- set board ---------
   def set_board
@@ -114,14 +132,14 @@ class Game
   end
 
   def board_size
-    print_board_size_instructions
+    board_size_instructions
     rows = nil
 
     loop do
       rows = gets.chomp
       break if entered_row_valid?(rows)
 
-      print_board_row_error
+      board_row_error
     end
 
     rows
@@ -129,13 +147,6 @@ class Game
 
   def create_board(rows)
     @board = Board.new(rows.to_i)
-  end
-
-  def valid_integer? str
-    Integer(str)
-    true
-  rescue ArgumentError, TypeError
-    false
   end
 
   def entered_row_valid?(rows)
@@ -166,21 +177,9 @@ class Game
 
 # ----------- end of set players ---------
 
-
-  def add_score(winner)
-    winner.score += 1
-  end
-
-  def exit_reason_entered?(bid)
-    if EXIT_WORDS.values.include?(bid)
-      @exit_reason = bid
-      return true
-    end
-  end
-
   def declare_winner
     if score_positive?
-      show_score
+      current_winner
     end
   end
 
@@ -205,10 +204,10 @@ class Game
     @p1.score == @p2.score
   end
 
-  def show_score
-    print_score(@p1, @p2) if p1_score_bigger?
-    print_score(@p2, @p1) if p2_score_bigger?
-    print_score if p_scores_equal?
+  def current_winner
+    score(@p1, @p2) if p1_score_bigger?
+    score(@p2, @p1) if p2_score_bigger?
+    score if p_scores_equal?
   end
 
 end
