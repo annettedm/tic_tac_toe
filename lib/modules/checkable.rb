@@ -1,3 +1,5 @@
+require_relative 'printable'
+
 module Checkable
 
   def score_positive?
@@ -22,6 +24,6 @@ module Checkable
   end
 
   def exit?
-    true if EXIT_WORDS.values.include?(@input)
+    true if Printable::EXIT_WORDS.values.include?(@input)
   end
 end

@@ -12,9 +12,13 @@ class Board
   attr_reader :rows
 
   def initialize(rows)
-    @board = Array.new(rows) { Array.new(rows) }
     @rows = rows
-    @alpha_array = ('A'..'Z').to_a.slice(0, rows)
+    create_board
+    assign_letters
+  end
+
+  def create_board
+    @board = Array.new(@rows) { Array.new(@rows) }
   end
 
   def assign_value(player, horizontal, vertical = 0)
@@ -25,6 +29,10 @@ class Board
     horizontal_value, vertical_value = convert_bid_to_numbers(horizontal_value) if horizontal_value.length == 2
 
     @board[horizontal_value][vertical_value] = peg
+  end
+
+  def assign_letters
+    @alpha_array = ('A'..'Z').to_a.slice(0, rows)
   end
 
   def show_board
@@ -43,6 +51,7 @@ class Board
 
 
   # ----------- validate bid ---------
+
   def valid_bid?(bid)
     if bid.length == 2 && whole_bid_valid?(bid)
       return cell_empty? bid
@@ -59,7 +68,8 @@ class Board
   end
 
   def whole_bid_valid? bid
-    bid_letter_valid?(bid.slice(0)) && bid_number_valid?(bid.slice(1))
+
+    bid_letter_valid?(bid.slice(0).capitalize) && bid_number_valid?(bid.slice(1))
   end
 
   def bid_letter_valid? letter
@@ -104,7 +114,7 @@ class Board
       counter += 1 if @board[i][i] == peg
     end
 
-    counter_equals_rows?
+    counter_equals_rows?(counter)
   end
 
   def board_right_cross?(peg)
@@ -115,7 +125,7 @@ class Board
       counter += 1 if @board[i][back_counter] == peg
       back_counter -= 1
     end
-    counter_equals_rows?
+    counter_equals_rows?(counter)
   end
 
   def board_horizontal?(peg)
@@ -124,7 +134,7 @@ class Board
       @rows.times do |j|
         counter += 1 if @board[i][j] == peg
       end
-      return true if counter_equals_rows?
+      return true if counter_equals_rows?(counter)
     end
     false
   end
@@ -135,7 +145,7 @@ class Board
       @rows.times do |j|
         counter += 1 if @board[j][i] == peg
       end
-      return true if counter_equals_rows?
+      return true if counter_equals_rows?(counter)
     end
     false
   end

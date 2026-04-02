@@ -10,10 +10,10 @@ class Game
   include Validable
   include Checkable
 
-  attr_reader :start_new_game
+  attr_reader :new_game
 
   def initialize
-    @round = 1
+    @round = 0
     @new_game = false
     @next_round = false
   end
@@ -22,44 +22,48 @@ class Game
     initial_instructions
     set_board
     set_players
-    run_game
+    game
   end
 
   # ----------- run game ---------
 
-  def run_game
-    run_game_start_players
+  def game
+    players_pegs
     current_score
 
-    run_game_loop
+    game_loop
 
-    if @new_game
-      puts "A new game is started."
-      return
-    else
-      delimiter
-      puts 'The game is over.'
-      declare_winner
-    end
+    return if @new_game
+
+    delimiter
+    game_over_message
+    declare_winner
   end
 
-  def process_exit_words
+  def process_exit
     if @input == EXIT_WORDS[:stop_app]
-      puts 'The game is stopped.'
+      game_stopped_message
       final_scores
       exit
     elsif @input == EXIT_WORDS[:new_game]
       @new_game = true
       final_scores
+      delimiter
+      new_game_message
     elsif @input == EXIT_WORDS[:next_round]
       @next_round = true
+      delimiter
+      new_round_message
+      delimiter
+      delimiter
     end
   end
 
-  def run_game_loop
+  def game_loop
     3.times do
       @round += 1
       delimiter
+      @board.create_board
       run_round
       break if @new_game
     end
@@ -72,42 +76,41 @@ class Game
     round_number
     @board.show_board
 
-    run_round_turns
+    round_turns
   end
 
   def assign_player(i)
-    i.even? ? @p1 : @p2
+    @player = i.even? ? @p1 : @p2
   end
 
-  def run_round_turns
+  def round_turns
     (@board.rows ** 2).times do |i|
-      player = assign_player(i)
-      get_input(player)
+      assign_player(i)
+      input
 
       break if @new_game || @next_round
 
-      @board.assign_value(player, @input)
+      @board.assign_value(@player, @input)
       @board.show_board
 
-      break if check_for_round_winner(player)
+      if @board.round_win?(@player)
+        process_round_winner
+        break
+      end
 
       current_score
     end
   end
 
-  def get_input(player)
-    round_turns_instructions(player)
-
+  def input
+    round_turns_instructions
     valid_input
   end
 
   def valid_input
     loop do
       @input = gets.chomp
-      if exit?
-        process_exit_words
-      end
-
+      process_exit if exit?
 
       break if @board.valid_bid?(@input) || @new_game || @next_round
 
@@ -115,20 +118,32 @@ class Game
     end
   end
 
-
   # ----------- end of round ---------
 
   # ----------- winner ---------
 
-  def check_for_round_winner(player)
-    if @board.round_win?(player)
-      round_winner_announcement(player)
-      player.add_score
-      current_score
-      return true
-    end
+  def process_round_winner
+    round_winner_announcement
+    @player.add_score
+    current_score
   end
 
+  def declare_winner
+    return unless score_positive?
+
+    current_winner
+  end
+
+  def final_scores
+    current_score
+    declare_winner
+  end
+
+  def current_winner
+    score(@p1, @p2) if p1_score_bigger?
+    score(@p2, @p1) if p2_score_bigger?
+    score if p_scores_equal?
+  end
 
   # ----------- end of winner ---------
 
@@ -162,39 +177,22 @@ class Game
   # ----------- set players ---------
 
   def set_players
-    puts "Now we set users."
+    set_players_instructions
 
-    @p1 = Player.new(get_name(0), 'x')
-    @p2 = Player.new(get_name(1), 'o')
+    @p1 = Player.new(player_name(0), 'x')
+    @p2 = Player.new(player_name(1), 'o')
   end
 
 
-  def get_name(i)
-    puts "What's player #{i + 1} name?"
+  def player_name(i)
+    request_name(i)
     @input = gets.chomp.capitalize
     define_player_name
   end
 
   def define_player_name
-    @input =~ /[a-zA-Z]/ ? @input : "Stranger"
+    @input = @input.empty? ? "Stranger" : @input
   end
 
   # ----------- end of set players ---------
-
-  def declare_winner
-    return unless score_positive?
-    current_winner
-  end
-
-  def final_scores
-    current_score
-    declare_winner
-  end
-
-  def current_winner
-    score(@p1, @p2) if p1_score_bigger?
-    score(@p2, @p1) if p2_score_bigger?
-    score if p_scores_equal?
-  end
-
 end
