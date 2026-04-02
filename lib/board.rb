@@ -1,10 +1,12 @@
-require_relative './modules/printable'
-require_relative './modules/validable'
+require_relative './modules/board/checkable'
+require_relative './modules/board/printable'
+require_relative './modules/shared/checkable'
+require_relative './modules/shared/printable'
 
 
 class Board
   include Printable
-  include Validable
+  include Checkable
 
   ROW_MIN = 3
   ROW_MAX = 9
@@ -49,16 +51,6 @@ class Board
     delimiter
   end
 
-
-  # ----------- validate bid ---------
-
-  def valid_bid?(bid)
-    if bid.length == 2 && whole_bid_valid?(bid)
-      return cell_empty? bid
-    end
-    false
-  end
-
   def convert_bid_to_numbers(bid)
     arr = bid.upcase.split('')
     horizontal = @alpha_array.index(arr[0])
@@ -67,34 +59,13 @@ class Board
     [horizontal, vertical]
   end
 
-  def whole_bid_valid? bid
 
-    bid_letter_valid?(bid.slice(0).capitalize) && bid_number_valid?(bid.slice(1))
-  end
-
-  def bid_letter_valid? letter
-    @alpha_array.include? letter
-  end
-
-  def bid_number_valid? number
-    valid_integer?(number) && number.to_i.between?(1, @rows)
-  end
-
-  def cell_empty? bid
-    horizontal, vertical = convert_bid_to_numbers(bid)
-    @board[horizontal][vertical].nil?
-  end
-
-  # ----------- end of validate bid ---------
 
   # def value_exists?(peg, horizontal, vertical)
   #   @board[horizontal][vertical] == peg
   # end
 
-  def round_win?(player)
-    peg = player.peg
-    board_left_cross?(peg) || board_right_cross?(peg) || board_horizontal?(peg) || board_vertical?(peg)
-  end
+
 
   private
 

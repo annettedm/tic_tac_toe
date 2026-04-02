@@ -1,14 +1,19 @@
 require_relative './board'
 require_relative './player'
-require_relative 'modules/printable'
-require_relative 'modules/validable'
-require_relative 'modules/checkable'
+require_relative 'modules/game/printable'
+require_relative 'modules/game/checkable'
+require_relative 'modules/shared/checkable'
+require_relative 'modules/shared/printable'
 require 'debug'
 
 class Game
   include Printable
-  include Validable
   include Checkable
+
+  EXIT_WORDS = {
+    stop_app: 's',
+    next_round: 'r',
+    new_game: 'g' }
 
   attr_reader :new_game
 
@@ -53,8 +58,8 @@ class Game
     elsif @input == EXIT_WORDS[:next_round]
       @next_round = true
       delimiter
-      new_round_message
       delimiter
+      new_round_message
       delimiter
     end
   end
@@ -88,7 +93,11 @@ class Game
       assign_player(i)
       input
 
-      break if @new_game || @next_round
+      if @new_game || @next_round
+        @next_round = false
+        break
+      end
+
 
       @board.assign_value(@player, @input)
       @board.show_board

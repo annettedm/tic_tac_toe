@@ -1,22 +1,12 @@
-require_relative '../board'
+require_relative '../../board'
+require_relative '../shared/printable'
 
 module Printable
-
-  EXIT_WORDS = {
-    stop_app: 's',
-    next_round: 'r',
-    new_game: 'g' }
-
-  private
 
   def current_score
     puts "Current score is "
     puts "#{@p1.name}: #{@p1.score}"
     puts "#{@p2.name}: #{@p2.score}"
-  end
-
-  def delimiter
-    puts "-----------------------------"
   end
 
   def initial_instructions
@@ -77,7 +67,7 @@ module Printable
 
   def round_turns_instructions
     puts "#{@player.name}, make a choice, enter a letter and a number, for example, A2."
-    puts "Enter #{ EXIT_WORDS[:stop_app] } to stop a game. \nEnter #{ EXIT_WORDS[:next_round] } to start a new round. \nEnter #{ EXIT_WORDS[:new_game] } to start a new game."
+    puts "Enter #{ Game::EXIT_WORDS[:stop_app] } to stop a game. \nEnter #{ Game::EXIT_WORDS[:next_round] } to start a new round. \nEnter #{ Game::EXIT_WORDS[:new_game] } to start a new game."
   end
 
   def invalid_input

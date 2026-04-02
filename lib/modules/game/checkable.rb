@@ -24,6 +24,13 @@ module Checkable
   end
 
   def exit?
-    true if Printable::EXIT_WORDS.values.include?(@input)
+    true if Game::EXIT_WORDS.values.include?(@input)
   end
+
+  def round_win?(player)
+    peg = player.peg
+    board_left_cross?(peg) || board_right_cross?(peg) || board_horizontal?(peg) || board_vertical?(peg)
+  end
+
+      ## ----------- end of validate bid ---------
 end
