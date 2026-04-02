@@ -33,10 +33,6 @@ class Board
     @board[horizontal_value][vertical_value] = peg
   end
 
-  def assign_letters
-    @alpha_array = ('A'..'Z').to_a.slice(0, rows)
-  end
-
   def show_board
     delimiter
     puts show_board_numbers
@@ -51,6 +47,13 @@ class Board
     delimiter
   end
 
+  # private
+
+  def assign_letters
+    @alpha_array = ('A'..'Z').to_a.slice(0, rows)
+  end
+
+
   def convert_bid_to_numbers(bid)
     arr = bid.upcase.split('')
     horizontal = @alpha_array.index(arr[0])
@@ -59,16 +62,6 @@ class Board
     [horizontal, vertical]
   end
 
-
-
-  # def value_exists?(peg, horizontal, vertical)
-  #   @board[horizontal][vertical] == peg
-  # end
-
-
-
-  private
-
   def show_board_numbers
     numbers = "  "
     @rows.times do |i|
@@ -76,7 +69,6 @@ class Board
     end
     numbers
   end
-
 
   def board_left_cross?(peg)
     counter = 0
