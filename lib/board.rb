@@ -20,17 +20,15 @@ class Board
   end
 
   def create_board
-    @board = Array.new(@rows) { Array.new(@rows) }
+    @board = Array.new(@rows) { Array.new(@rows, ' ') } if @rows.is_a?(Integer) && @rows >= 0
   end
 
-  def assign_value(player, horizontal, vertical = 0)
-    peg = player.peg
-    horizontal_value = horizontal
-    vertical_value = vertical
+  def insert_peg(player, bid)
+    return unless valid_player?(player) && valid_bid?(bid)
 
-    horizontal_value, vertical_value = convert_bid_to_numbers(horizontal_value) if horizontal_value.length == 2
+    horizontal, vertical = convert_bid_to_numbers(bid)
 
-    @board[horizontal_value][vertical_value] = peg
+    @board[horizontal][vertical] = player.peg
   end
 
   def show_board
@@ -47,12 +45,11 @@ class Board
     delimiter
   end
 
-  # private
+  private
 
   def assign_letters
     @alpha_array = ('A'..'Z').to_a.slice(0, rows)
   end
-
 
   def convert_bid_to_numbers(bid)
     arr = bid.upcase.split('')
@@ -68,52 +65,5 @@ class Board
       numbers << "|#{i + 1}|"
     end
     numbers
-  end
-
-  def board_left_cross?(peg)
-    counter = 0
-
-    @rows.times do |i|
-      counter += 1 if @board[i][i] == peg
-    end
-
-    counter_equals_rows?(counter)
-  end
-
-  def board_right_cross?(peg)
-    counter = 0
-    back_counter = @rows - 1
-
-    @rows.times do |i|
-      counter += 1 if @board[i][back_counter] == peg
-      back_counter -= 1
-    end
-    counter_equals_rows?(counter)
-  end
-
-  def board_horizontal?(peg)
-    @rows.times do |i|
-      counter = 0
-      @rows.times do |j|
-        counter += 1 if @board[i][j] == peg
-      end
-      return true if counter_equals_rows?(counter)
-    end
-    false
-  end
-
-  def board_vertical?(peg)
-    @rows.times do |i|
-      counter = 0
-      @rows.times do |j|
-        counter += 1 if @board[j][i] == peg
-      end
-      return true if counter_equals_rows?(counter)
-    end
-    false
-  end
-
-  def counter_equals_rows?(counter)
-    counter == @rows
   end
 end

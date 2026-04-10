@@ -98,8 +98,7 @@ class Game
         break
       end
 
-
-      @board.assign_value(@player, @input)
+      @board.insert_peg(@player, @input)
       @board.show_board
 
       if @board.round_win?(@player)

@@ -32,5 +32,7 @@ module Checkable
     board_left_cross?(peg) || board_right_cross?(peg) || board_horizontal?(peg) || board_vertical?(peg)
   end
 
-      ## ----------- end of validate bid ---------
+  private
+
+
 end
