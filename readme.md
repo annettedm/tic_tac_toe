@@ -1,4 +1,4 @@
-# Tic-tac-toe
+# Tic-tac-toe game
 
   This is a tic-tac-toe console game written in Ruby.
   There are 2 human players and a board with the number of raws (and columns) defined by a player and limited from 3 to 9 rows. 
